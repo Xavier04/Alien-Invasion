@@ -1,13 +1,14 @@
 import sys
 from time import sleep
 
+import json
 import pygame
 
 from bullet import Bullet
 from alien import Alien
 
 
-def check_keydown_events(event, ai_settings, screen, ship, bullets):
+def check_keydown_events(event, ai_settings, screen, stats, ship, bullets):
     """response press"""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
@@ -16,6 +17,7 @@ def check_keydown_events(event, ai_settings, screen, ship, bullets):
     elif event.key == pygame.K_SPACE:
         fire_bullet(ai_settings, screen, ship, bullets)
     elif event.key == pygame.K_q:
+        write_high_score(stats)
         sys.exit()
 
 
@@ -40,10 +42,12 @@ def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens,
     """response the keyboard and mouse events"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            write_high_score(stats)
             sys.exit()
 
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, ai_settings, screen, ship, bullets)
+            check_keydown_events(event, ai_settings, screen, stats, ship,
+                                 bullets)
 
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
@@ -254,3 +258,22 @@ def check_high_score(stats, sb):
     if stats.score > stats.high_score:
         stats.high_score = stats.score
         sb.prep_high_score()
+
+
+def write_high_score(stats):
+    """write high score to file"""
+    filename = 'high_score.json'
+
+    with open(filename, 'w') as f_obj:
+        json.dump(stats.high_score, f_obj)
+
+
+def load_high_score(stats):
+    """load high score from file"""
+    filename = 'high_score.json'
+    try:
+        with open(filename, 'r') as f_obj:
+            stats.high_score = json.load(f_obj)
+    except:
+        pass
+

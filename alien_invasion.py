@@ -22,6 +22,7 @@ def run_game():
 
     # create object to store game stats
     stats = GameStats(ai_settings)
+    gf.load_high_score(stats)
     sb = Scoreboard(ai_settings, screen, stats)
 
     # create a ship
